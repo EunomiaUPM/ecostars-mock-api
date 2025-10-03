@@ -12,9 +12,6 @@ func ConnectDB() (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-	db.AutoMigrate(&domain.Hotel{})
-	db.AutoMigrate(&domain.HotelEvenModel{})
-	db.AutoMigrate(&domain.Subscription{})
-	db.AutoMigrate(&domain.HotelMeasure{})
+	db.AutoMigrate(&domain.HotelModel{}, &domain.HotelEvenModel{}, &domain.Subscription{}, &domain.HotelMeasure{})
 	return db, nil
 }

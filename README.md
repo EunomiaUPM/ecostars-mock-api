@@ -14,32 +14,21 @@ This repository contains a mock server built with [Gin](https://github.com/gin-g
 
 - [Go](https://golang.org/dl/) 1.18 or higher
 
-### Installation
-
-```bash
-git clone https://github.com/yourusername/gin-quickstart.git
-cd gin-quickstart
-go mod tidy
-```
 
 ### Running the Server
 
 ```bash
-go run main.go
+go run ./cmd/.
 ```
 
-The server will start on `http://localhost:8080`.
+The server will start on `http://localhost:8081`.
 
 ## Example Endpoints
 
 ```http
-GET /ping
-POST /mock
+GET /hotels
 ```
 
-## Customization
-
-Modify `main.go` to add or change endpoints and responses.
 
 ## License
 

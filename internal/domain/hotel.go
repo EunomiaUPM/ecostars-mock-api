@@ -5,10 +5,15 @@ import (
 )
 
 type HotelModel struct {
-	gorm.Model
-	Name    string `json:"name"`
-	Address string `json:"address"`
-	City    string `json:"city"`
+	gorm.Model `gorm:"tableName:hotels"`
+	Name       string         `json:"name"`
+	Address    string         `json:"address"`
+	City       string         `json:"city"`
+	Measures   []HotelMeasure `json:"-" gorm:"foreignKey:HotelID"`
+}
+
+func (HotelModel) TableName() string {
+	return "hotels"
 }
 
 type Hotel struct {

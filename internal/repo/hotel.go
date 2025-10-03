@@ -11,14 +11,10 @@ type HotelRepository struct {
 	DB *gorm.DB
 }
 
-func (repo *HotelRepository) TableName() string {
-	return "hotels"
-}
-
 func (repo *HotelRepository) GetAllHotels(ctx context.Context) ([]domain.HotelModel, error) {
 	var hotels []domain.HotelModel
 	err := repo.DB.WithContext(ctx).Find(&hotels).Error
-	return []domain.HotelModel{}, err
+	return hotels, err
 }
 
 func (repo *HotelRepository) CreateHotel(ctx context.Context, newHotel *domain.HotelCreateRequest) (domain.HotelModel, error) {
