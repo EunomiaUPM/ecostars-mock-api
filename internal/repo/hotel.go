@@ -28,7 +28,9 @@ func (repo *HotelRepository) CreateHotel(ctx context.Context, newHotel *domain.H
 }
 
 func (repo *HotelRepository) GetHotelByID(ctx context.Context, id uint) (domain.HotelModel, error) {
-	return domain.HotelModel{}, nil
+	var hotel domain.HotelModel
+	err := repo.DB.WithContext(ctx).First(&hotel, id).Error
+	return hotel, err
 }
 
 func (repo *HotelRepository) UpdateHotel(ctx context.Context, id uint, updatedHotel *domain.HotelUpdateRequest) (domain.HotelModel, error) {
