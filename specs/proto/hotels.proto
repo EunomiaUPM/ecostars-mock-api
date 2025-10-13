@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package hotels;
+
+option go_package = "specs/proto/hotels;hotels";
+
+// Hotel message definition
+message Hotel {
+    int32 id = 1;
+    string name = 2;
+    string address = 3;
+    string city = 4;
+    string country = 5;
+    int32 stars = 6;
+    string description = 7;
+}
+
+// Request to get a hotel by ID
+message GetHotelRequest {
+    int32 id = 1;
+}
+
+// Response with a single hotel
+message GetHotelResponse {
+    Hotel hotel = 1;
+}
+
+// Request to list hotels
+message ListHotelsRequest {
+    int32 page = 1;
+    int32 page_size = 2;
+}
+
+// Response with a list of hotels
+message ListHotelsResponse {
+    repeated Hotel hotels = 1;
+}
+
+// Hotel service definition
+service HotelService {
+    rpc GetHotel(GetHotelRequest) returns (GetHotelResponse);
+    rpc ListHotels(ListHotelsRequest) returns (ListHotelsResponse);
+}

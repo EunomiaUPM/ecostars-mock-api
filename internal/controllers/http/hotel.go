@@ -18,7 +18,7 @@ func (r *HotelRouter) Create(router *gin.Engine) {
 	hotelGroup.POST("/", r.createHotel)
 	hotelGroup.GET("/:id", r.getHotelById)
 	hotelGroup.GET("/:id/measures", r.getMeasuresByHotelId)
-	measuresGroup := router.Group("measures")
+	measuresGroup := router.Group("/measures")
 	measuresGroup.POST("/", r.createMeasure)
 	measuresGroup.GET("/:id", r.getMeasureById)
 }
