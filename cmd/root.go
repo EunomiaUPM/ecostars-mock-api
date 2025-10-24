@@ -1,5 +1,10 @@
 package main
 
+import (
+	"ecostars-fake-api/internal/config"
+)
+
 func main() {
-	BootstrapHTTPServer()
+	config := config.LoadConfig()
+	BootstrapHTTPServer(config)
 }

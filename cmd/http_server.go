@@ -1,6 +1,7 @@
 package main
 
 import (
+	"ecostars-fake-api/internal/config"
 	"ecostars-fake-api/internal/controllers/http"
 	"ecostars-fake-api/internal/repo"
 	"ecostars-fake-api/internal/services"
@@ -10,8 +11,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func BootstrapHTTPServer() {
-	db, err := database.ConnectDB()
+func BootstrapHTTPServer(config *config.Config) {
+	db, err := database.ConnectDB(config)
 	if err != nil {
 		panic("failed to connect database")
 	}
@@ -26,5 +27,5 @@ func BootstrapHTTPServer() {
 	}
 	hotelRouter.Create(router)
 
-	router.Run("0.0.0.0:8081") // listens on 0.0.0.0:8080 by default
+	router.Run(config.GetServerAddress()) // listens on 0.0.0.0:8080 by default
 }
