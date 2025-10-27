@@ -24,9 +24,9 @@ type Hotel struct {
 }
 
 type HotelCreateRequest struct {
-	Name    string `json:"name" binding:"required"`
-	Address string `json:"address" binding:"required"`
-	City    string `json:"city" binding:"required"`
+	Name    string `json:"name" binding:"required" faker:"word"`
+	Address string `json:"address" binding:"required" faker:"sentence"`
+	City    string `json:"city" binding:"required" faker:"oneof:New York,Los Angeles,Chicago,Houston,Phoenix"`
 }
 
 type HotelUpdateRequest struct {

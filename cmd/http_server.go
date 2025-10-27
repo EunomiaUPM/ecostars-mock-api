@@ -18,6 +18,7 @@ func BootstrapHTTPServer(config *config.Config) {
 	}
 	_ = db
 
+	
 	router := gin.Default()
 	hotelRouter := http.HotelRouter{
 		HotelService: services.HotelService{
