@@ -28,8 +28,6 @@ func (repo *SubscriptionRepository) CreateSubscription(ctx context.Context, newS
 	subscription := domain.Subscription{
 		URL:       newSubscription.URL,
 		EventType: newSubscription.EventType,
-		StartDate: newSubscription.StartDate,
-		EndDate:   newSubscription.EndDate,
 	}
 	err = repo.DB.WithContext(ctx).Create(&subscription).Error
 	return subscription, err
