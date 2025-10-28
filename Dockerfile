@@ -28,4 +28,4 @@ COPY --from=builder /app/server .
 EXPOSE 8081 8082
 
 # Command to run
-CMD ["./server"]
+ENTRYPOINT ["./server"]

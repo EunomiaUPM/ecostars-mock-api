@@ -97,4 +97,25 @@ At the notification endpoint, messages like this will arrive:
 
 ## For use with docker
 
-Coming soon…
+As always... just. Remember to adjust `.env` properly since docker compose services relies on this file.
+
+```bash
+# .env
+DATABASE_HOST=postgres
+DATABASE_PORT=5432
+DATABASE_USER=postgres
+DATABASE_PASS=postgres
+DATABASE_NAME=postgres
+STATIC_SERVER_PORT=8081
+STATIC_SERVER_HOST=static-api
+DYNAMIC_SERVER_PORT=8082
+DYNAMIC_SERVER_HOST=dynamic-api
+```
+
+```bash
+docker compose up -d
+```
+
+## Contribute
+
+Please open up issue to contribute

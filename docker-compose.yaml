@@ -12,12 +12,32 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
-  server:
+  static-api:
     build: .
     ports:
       - "8081:8081"
-    environment:
-      DATABASE_URL: postgres://postgres:postgres@postgres:10000/postgres
+    env_file:
+      - .env
+    command: "serve"
+    depends_on:
+      - postgres
+      - static-api-setup
+
+  static-api-setup:
+    build: .
+    env_file:
+      - .env
+    command: "fake"
+    depends_on:
+      - postgres
+
+  dynamic-api:
+    build: .
+    ports:
+      - "8082:8082"
+    env_file:
+      - .env
+    command: ["metrics"]
     depends_on:
       - postgres
 
