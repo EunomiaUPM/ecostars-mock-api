@@ -1,0 +1,60 @@
+{
+	"info": {
+		"_postman_id": "92ffd341-7688-4ab2-a46f-7306a6395a9a",
+		"name": "pubsub",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "13165791",
+		"_collection_link": "https://winter-resonance-102023.postman.co/workspace/ecostars~780df7da-4b95-46ec-ab97-d5099582bada/collection/13165791-92ffd341-7688-4ab2-a46f-7306a6395a9a?action=share&source=collection_link&creator=13165791"
+	},
+	"item": [
+		{
+			"name": "Subscribe",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"url\": \"http://localhost:1112/\",\n    \"event_type\": \"hotel_water_usage\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HotelUrlDynamic}}/subscriptions/subscribe",
+					"host": [
+						"{{HotelUrlDynamic}}"
+					],
+					"path": [
+						"subscriptions",
+						"subscribe"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Unsubscribe",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{HotelUrlDynamic}}/subscriptions/unsubscribe/1",
+					"host": [
+						"{{HotelUrlDynamic}}"
+					],
+					"path": [
+						"subscriptions",
+						"unsubscribe",
+						"1"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

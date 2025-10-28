@@ -1,0 +1,126 @@
+{
+	"info": {
+		"_postman_id": "14f7c1c2-c903-43d6-8139-fbfdeef6c626",
+		"name": "hotel",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "13165791",
+		"_collection_link": "https://winter-resonance-102023.postman.co/workspace/ecostars~780df7da-4b95-46ec-ab97-d5099582bada/collection/13165791-14f7c1c2-c903-43d6-8139-fbfdeef6c626?action=share&source=collection_link&creator=13165791"
+	},
+	"item": [
+		{
+			"name": "Get Hotels",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{HotelUrl}}/hotels",
+					"host": [
+						"{{HotelUrl}}"
+					],
+					"path": [
+						"hotels"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Hotel By Id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{HotelUrl}}/hotels/85",
+					"host": [
+						"{{HotelUrl}}"
+					],
+					"path": [
+						"hotels",
+						"85"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Measures By Hotel",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{HotelUrl}}/hotels/3/measures",
+					"host": [
+						"{{HotelUrl}}"
+					],
+					"path": [
+						"hotels",
+						"3",
+						"measures"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Measure",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{HotelUrl}}/measures/7",
+					"host": [
+						"{{HotelUrl}}"
+					],
+					"path": [
+						"measures",
+						"7"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Hotel",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{HotelUrl}}/hotels",
+					"host": [
+						"{{HotelUrl}}"
+					],
+					"path": [
+						"hotels"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Hotel Measure",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"hotel_id\": 1,\n  \"year\": 2025,\n  \"rooms\": 245,\n  \"stays\": 140452,\n  \"gasKwh\": 878133,\n  \"waterM3\": 18500,\n  \"occupied\": 79225,\n  \"deviation\": -0.5860053121943269,\n  \"energyKwh\": 1057952.3,\n  \"ratingCo2\": -1.3326906212964649,\n  \"totalArea\": 12895,\n  \"staysPerRN\": 1.7728242347743768,\n  \"electricity\": 1186.5341,\n  \"ratingCo2RN\": -1.3308659680151467,\n  \"ratingWater\": 0.23512173347676607,\n  \"deviationCo2\": -1.1075617934863975,\n  \"ratingEnergy\": 13.372076759256634,\n  \"ratingCo2S1RN\": 2.022260771019249,\n  \"ratingCo2S2RN\": 0.014976763647838433,\n  \"ratingCo2Stay\": -0.750703844131803,\n  \"ratingWaterRN\": 0.2335121489428842,\n  \"deviationCo2RN\": -1.1074145252635308,\n  \"deviationWaste\": -1,\n  \"deviationWater\": -0.4243913326161697,\n  \"electricityKwh\": 4192.7,\n  \"ratingEnergyRN\": 13.353768381192802,\n  \"totalEmissions\": -105437.85631599999,\n  \"co2Compensation\": 266838,\n  \"deviationEnergy\": -0.7028427386831859,\n  \"ratingCo2S1Stay\": 1.140700093868368,\n  \"ratingCo2S2Stay\": 0.008447968701050891,\n  \"ratingWaterArea\": 1.4346645986816595,\n  \"ratingWaterRoom\": 75.51020408163265,\n  \"ratingWaterStay\": 0.13171759747102213,\n  \"scope1Emissions\": 160213.60958400002,\n  \"scope2Emissions\": 1186.5341,\n  \"deviationCo2S1RN\": -0.6735656543956015,\n  \"deviationCo2S2RN\": -0.9975824433175402,\n  \"deviationCo2S3RN\": -1,\n  \"deviationCo2Stay\": -1.1090610911571626,\n  \"deviationWasteRN\": -1,\n  \"deviationWaterRN\": -0.432439255285579,\n  \"directStationary\": 160213.60958400002,\n  \"ratingEnergyArea\": 82.04360604885613,\n  \"ratingEnergyRoom\": 4318.172653061224,\n  \"ratingEnergyStay\": 7.53248298351038,\n  \"recommendedStars\": 4.5,\n  \"deviationEnergyRN\": -0.7032495915290489,\n  \"deviationCo2S1Stay\": -0.6685617160673023,\n  \"deviationCo2S2Stay\": -0.9975453843967891,\n  \"deviationCo2S3Stay\": -1,\n  \"deviationWasteStay\": -1,\n  \"deviationWaterStay\": -0.41454162276080087,\n  \"recommendedStarsV1\": 4.5,\n  \"recommendedStarsV2\": 4.5,\n  \"scope2Compensation\": 266838,\n  \"deviationEnergyStay\": -0.6987006806595848,\n  \"energyKwhWithCo2Compensation\": 1057323.3949999998,\n  \"ratingEnergyWithCo2Compensation\": 13.364127661802732,\n  \"deviationEnergyWithCo2Compensation\": -0.7030193852932727\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HotelUrl}}/measures",
+					"host": [
+						"{{HotelUrl}}"
+					],
+					"path": [
+						"measures"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
