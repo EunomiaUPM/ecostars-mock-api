@@ -55,5 +55,5 @@ func BootstrapMetricsCollector(config *config.Config) {
 	}
 	subscriptionsRouter.Create(router)
 
-	router.Run(config.GetServerAddress()) // listens on
+	router.Run(config.GetDynamicServerAddress()) // listens on
 }

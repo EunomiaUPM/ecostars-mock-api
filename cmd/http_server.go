@@ -18,7 +18,6 @@ func BootstrapHTTPServer(config *config.Config) {
 	}
 	_ = db
 
-	
 	router := gin.Default()
 	hotelRouter := http.HotelRouter{
 		HotelService: services.HotelService{
@@ -28,5 +27,5 @@ func BootstrapHTTPServer(config *config.Config) {
 	}
 	hotelRouter.Create(router)
 
-	router.Run(config.GetServerAddress()) // listens on 0.0.0.0:8080 by default
+	router.Run(config.GetStaticServerAddress()) // listens on 0.0.0.0:8080 by default
 }

@@ -8,13 +8,15 @@ import (
 )
 
 type Config struct {
-	DatabaseHost string
-	DatabasePort string
-	DatabaseUser string
-	DatabasePass string
-	DatabaseName string
-	ServerPort   string
-	ServerHost   string
+	DatabaseHost            string
+	DatabasePort            string
+	DatabaseUser            string
+	DatabasePass            string
+	DatabaseName            string
+	StaticServerPort        string
+	StaticServerHost        string
+	DynamicStaticServerPort string
+	DynamicStaticServerHost string
 }
 
 func LoadConfig() *Config {
@@ -24,13 +26,15 @@ func LoadConfig() *Config {
 	}
 
 	config := &Config{
-		DatabaseHost: os.Getenv("DATABASE_HOST"),
-		DatabasePort: os.Getenv("DATABASE_PORT"),
-		DatabaseUser: os.Getenv("DATABASE_USER"),
-		DatabasePass: os.Getenv("DATABASE_PASS"),
-		DatabaseName: os.Getenv("DATABASE_NAME"),
-		ServerPort:   os.Getenv("SERVER_PORT"),
-		ServerHost:   os.Getenv("SERVER_HOST"),
+		DatabaseHost:            os.Getenv("DATABASE_HOST"),
+		DatabasePort:            os.Getenv("DATABASE_PORT"),
+		DatabaseUser:            os.Getenv("DATABASE_USER"),
+		DatabasePass:            os.Getenv("DATABASE_PASS"),
+		DatabaseName:            os.Getenv("DATABASE_NAME"),
+		StaticServerPort:        os.Getenv("STATIC_SERVER_PORT"),
+		StaticServerHost:        os.Getenv("STATIC_SERVER_HOST"),
+		DynamicStaticServerPort: os.Getenv("DYNAMIC_SERVER_PORT"),
+		DynamicStaticServerHost: os.Getenv("DYNAMIC_SERVER_HOST"),
 	}
 
 	return config
@@ -49,6 +53,9 @@ func (c *Config) GetDatabaseDSN() string {
 		" sslmode=disable"
 }
 
-func (c *Config) GetServerAddress() string {
-	return c.ServerHost + ":" + c.ServerPort
+func (c *Config) GetStaticServerAddress() string {
+	return c.StaticServerHost + ":" + c.StaticServerPort
+}
+func (c *Config) GetDynamicServerAddress() string {
+	return c.DynamicStaticServerHost + ":" + c.DynamicStaticServerPort
 }
