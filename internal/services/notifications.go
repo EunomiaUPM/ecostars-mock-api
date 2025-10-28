@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"ecostars-fake-api/internal/domain" // Asumo que este es el import correcto para tu repo
+	"ecostars-fake-api/internal/repo"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -11,15 +12,8 @@ import (
 	"time" // <-- FIX: Importar 'time'
 )
 
-// Interfaz para tu repositorio de suscripciones
-// (Esto es una buena práctica en lugar de usar la implementación concreta)
-type SubscriptionRepository interface {
-	GetAllSubscriptions(ctx context.Context) ([]domain.Subscription, error)
-	// (domain.Subscription debe tener un campo 'URL' string)
-}
-
 type NotificationService struct {
-	subscriptionRepo SubscriptionRepository // Usar la interfaz
+	subscriptionRepo *repo.SubscriptionRepository // Usar la interfaz
 	httpClient       *http.Client
 	jobChannel       chan domain.MetricItem
 	httpJobChannel   chan httpJob
@@ -31,7 +25,7 @@ type httpJob struct {
 	Payload []byte
 }
 
-func NewNotificationService(subscriptionRepo SubscriptionRepository, workerPoolSize int) *NotificationService {
+func NewNotificationService(subscriptionRepo *repo.SubscriptionRepository, workerPoolSize int) *NotificationService {
 	return &NotificationService{
 		subscriptionRepo: subscriptionRepo,
 		httpClient: &http.Client{
@@ -67,19 +61,16 @@ func (n *NotificationService) getSubscribersWorker(ctx context.Context, wg *sync
 
 	for {
 		select {
-		case <-ctx.Done(): // Primero comprobar si nos han cancelado
+		case <-ctx.Done():
 			log.Println("getSubscribersWorker shutting down")
 			return
 
-		case metricItem := <-n.jobChannel: // Segundo, procesar trabajo
-			// (Ya no se necesita el 'select' interno)
+		case metricItem := <-n.jobChannel:
 			payload, err := json.Marshal(metricItem)
 			if err != nil {
 				log.Printf("failed to marshal metric item: %v", err)
 				continue
 			}
-
-			// (Asumo que tu domain.Subscription tiene un campo 'URL')
 			subscribers, err := n.subscriptionRepo.GetAllSubscriptions(ctx)
 			if err != nil {
 				log.Printf("failed to get subscribers: %v", err)
@@ -92,13 +83,12 @@ func (n *NotificationService) getSubscribersWorker(ctx context.Context, wg *sync
 			log.Printf("Fanning-out notification for metric %s to %d subscribers", metricItem.ItemType, len(subscribers))
 			for _, sub := range subscribers {
 				job := httpJob{
-					Url:     sub.URL, // Asegúrate que 'sub' tenga el campo 'URL'
+					Url:     sub.URL,
 					Payload: payload,
 				}
-				// Enviar al siguiente canal, pero respetando el apagado
 				select {
 				case n.httpJobChannel <- job:
-					// trabajo encolado para los httpSenders
+					// enqueued for httpSenderWorker
 				case <-ctx.Done():
 					log.Println("getSubscribersWorker shutting down, job not sent.")
 					return
@@ -134,7 +124,6 @@ func (n *NotificationService) httpSenderWorker(ctx context.Context, wg *sync.Wai
 			if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 				log.Printf("[Worker %d] FAILED notification to %s, status: %s", workerID, job.Url, resp.Status)
 			}
-			// ¡Importante! Cerrar el body para reutilizar la conexión
 			resp.Body.Close()
 
 		case <-ctx.Done():

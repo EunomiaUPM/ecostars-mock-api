@@ -35,7 +35,7 @@ func (repo *SubscriptionRepository) CreateSubscription(ctx context.Context, newS
 
 func (repo *SubscriptionRepository) GetAllSubscriptions(ctx context.Context) ([]domain.Subscription, error) {
 	var subscriptions []domain.Subscription
-	err := repo.DB.WithContext(ctx).Find(&subscriptions).Error
+	err := repo.DB.WithContext(ctx).Find(&subscriptions).Where("deleted_at IS NOT NULL").Error
 	return subscriptions, err
 }
 

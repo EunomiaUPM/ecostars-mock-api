@@ -6,8 +6,8 @@ import (
 
 type Subscription struct {
 	gorm.Model
-	URL       string `json:"url" gorm:"uniqueIndex:idx_url_event_type"`
-	EventType string `json:"event_type" gorm:"uniqueIndex:idx_url_event_type"`
+	URL       string `json:"url"`
+	EventType string `json:"event_type"`
 }
 
 type SubscriptionCreateRequest struct {
