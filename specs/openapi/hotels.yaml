@@ -14,6 +14,8 @@ tags:
     description: Operaciones relacionadas con la gestión de hoteles.
   - name: Measures
     description: Operaciones relacionadas con las métricas de sostenibilidad de los hoteles.
+  - name: PubSub
+    description: Operaciones relacionadas con las métricas en tiempo real.
 paths:
   /hotels:
     get:
@@ -51,16 +53,16 @@ paths:
             type: integer
             default: 0
       responses:
-        '200':
+        "200":
           description: Lista de hoteles obtenida con éxito.
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Hotel'
-        '500':
-          $ref: '#/components/responses/InternalError'
+                  $ref: "#/components/schemas/Hotel"
+        "500":
+          $ref: "#/components/responses/InternalError"
     post:
       summary: Crear un nuevo hotel
       description: Registra un nuevo hotel en la base de datos.
@@ -72,18 +74,18 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/HotelInput'
+              $ref: "#/components/schemas/HotelInput"
       responses:
-        '201':
+        "201":
           description: Hotel creado con éxito.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Hotel'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '500':
-          $ref: '#/components/responses/InternalError'
+                $ref: "#/components/schemas/Hotel"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalError"
   /hotels/{hotelId}:
     get:
       summary: Obtener un hotel por su ID
@@ -91,18 +93,18 @@ paths:
       tags:
         - Hotels
       parameters:
-        - $ref: '#/components/parameters/HotelId'
+        - $ref: "#/components/parameters/HotelId"
       responses:
-        '200':
+        "200":
           description: Datos del hotel.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Hotel'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalError'
+                $ref: "#/components/schemas/Hotel"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
   /hotels/{hotelId}/measures:
     get:
       summary: Obtener métricas de un hotel
@@ -110,7 +112,7 @@ paths:
       tags:
         - Measures
       parameters:
-        - $ref: '#/components/parameters/HotelId'
+        - $ref: "#/components/parameters/HotelId"
         - name: year
           in: query
           description: Filtrar métricas por año.
@@ -119,18 +121,18 @@ paths:
             type: integer
             example: 2024
       responses:
-        '200':
+        "200":
           description: Lista de métricas del hotel.
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Measure'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalError'
+                  $ref: "#/components/schemas/Measure"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
   /measures:
     post:
       summary: Registrar nuevas métricas para un hotel
@@ -143,26 +145,148 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MeasureInput'
+              $ref: "#/components/schemas/MeasureInput"
       responses:
-        '201':
+        "201":
           description: Métrica creada con éxito.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Measure'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '404':
+                $ref: "#/components/schemas/Measure"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
           description: El 'hotel_id' proporcionado en el cuerpo no existe.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
-        '500':
-          $ref: '#/components/responses/InternalError'
+                $ref: "#/components/schemas/Error"
+        "500":
+          $ref: "#/components/responses/InternalError"
+  /measures/{measure_id}:
+    parameters:
+      - $ref: "#/components/parameters/MeasureId"
+    get:
+      summary: Ver métrica por measure_id
+      description: Consultar métrica por ID
+      tags:
+        - Measures
+      responses:
+        "200":
+          description: Métrica consultada con éxito.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Measure"
+        "404":
+          description: El 'measure_id' proporcionado en el cuerpo no existe.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          $ref: "#/components/responses/InternalError"
+  /subscriptions/subscribe:
+    post:
+      summary: Subscribirse a cambios en el sistema
+      description: Añade una URL donde mandar los cambios en el sistema en tiempo real de manera asíncrona.
+      tags:
+        - PubSub
+      requestBody:
+        description: Datos de la métrica a registrar.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubscriptionCreateRequest"
+      responses:
+        "201":
+          description: Métrica creada con éxito.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubscriptionCreateResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          description: El 'hotel_id' proporcionado en el cuerpo no existe.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          $ref: "#/components/responses/InternalError"
+  /subscriptions/unsubscribe/{pubsub_id}:
+    parameters:
+      - $ref: "#/components/parameters/PubsubId"
+    post:
+      summary: Subscribirse a cambios en el sistema
+      description: Añade una URL donde mandar los cambios en el sistema en tiempo real de manera asíncrona.
+      tags:
+        - PubSub
+      responses:
+        "201":
+          description: Métrica creada con éxito.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnSubscriptionResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          description: El 'hotel_id' proporcionado en el cuerpo no existe.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
 components:
   schemas:
+    SubscriptionCreateRequest:
+      type: object
+      properties:
+        url:
+          type: string
+          description: URL del servicio al que enviar notificaciones
+          example: http://consumer.com/consumer-data
+        event_type:
+          type: string
+          description: Tipo de evento al que suscribirse
+          example: hotel_waste_generated
+    SubscriptionCreateResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Mensaje desde el sistema
+        data:
+          type: object
+          properties:
+            ID:
+              type: integer
+            CreatedAt:
+              type: string
+            UpdatedAt:
+              type: string
+            DeletedAt:
+              type: string
+              nullable: true
+            url:
+              type: string
+              description: URL del servicio al que enviar notificaciones
+              example: http://consumer.com/consumer-data
+            event_type:
+              type: string
+              description: Tipo de evento al que suscribirse
+              example: hotel_waste_generated
+    UnSubscriptionResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Mensaje desde el sistema
     Hotel:
       type: object
       properties:
@@ -170,23 +294,22 @@ components:
           type: integer
           description: Identificador único del hotel.
           example: 1
-          readOnly: true
         name:
           type: string
           description: Nombre del hotel.
-          example: 'Hotel Gran Vía'
+          example: "Hotel Gran Vía"
         address:
           type: string
           description: Dirección física del hotel.
-          example: 'Calle Gran Vía, 10'
+          example: "Calle Gran Vía, 10"
         city:
           type: string
           description: Ciudad donde se ubica el hotel.
-          example: 'Madrid'
+          example: "Madrid"
         country:
           type: string
           description: País donde se ubica el hotel.
-          example: 'España'
+          example: "España"
         stars:
           type: integer
           description: Categoría del hotel (1-5 estrellas).
@@ -197,12 +320,10 @@ components:
           type: string
           format: date-time
           description: Fecha y hora de creación del registro.
-          readOnly: true
         updated_at:
           type: string
           format: date-time
           description: Fecha y hora de la última actualización.
-          readOnly: true
       required:
         - name
         - city
@@ -214,19 +335,19 @@ components:
         name:
           type: string
           description: Nombre del hotel.
-          example: 'Hotel Gran Vía'
+          example: "Hotel Gran Vía"
         address:
           type: string
           description: Dirección física del hotel.
-          example: 'Calle Gran Vía, 10'
+          example: "Calle Gran Vía, 10"
         city:
           type: string
           description: Ciudad donde se ubica el hotel.
-          example: 'Madrid'
+          example: "Madrid"
         country:
           type: string
           description: País donde se ubica el hotel.
-          example: 'España'
+          example: "España"
         stars:
           type: integer
           description: Categoría del hotel (1-5 estrellas).
@@ -244,7 +365,6 @@ components:
         id:
           type: integer
           description: Identificador único de la métrica.
-          readOnly: true
         hotel_id:
           type: integer
           description: ID del hotel al que pertenece la métrica.
@@ -293,12 +413,10 @@ components:
           type: string
           format: date-time
           description: Fecha y hora de creación del registro.
-          readOnly: true
         updated_at:
           type: string
           format: date-time
           description: Fecha y hora de la última actualización.
-          readOnly: true
       required:
         - hotel_id
         - year
@@ -360,11 +478,11 @@ components:
         code:
           type: string
           description: Un código de error interno de la aplicación.
-          example: 'NOT_FOUND'
+          example: "NOT_FOUND"
         message:
           type: string
           description: Un mensaje legible explicando el error.
-          example: 'El recurso solicitado no pudo ser encontrado.'
+          example: "El recurso solicitado no pudo ser encontrado."
       required:
         - code
         - message
@@ -377,22 +495,38 @@ components:
       schema:
         type: integer
       example: 1
+    MeasureId:
+      name: measureId
+      in: path
+      description: Identificador único del medida.
+      required: true
+      schema:
+        type: integer
+      example: 1
+    PubsubId:
+      name: pubsub_id
+      in: path
+      description: Identificador único de la suscripción.
+      required: true
+      schema:
+        type: integer
+      example: 1
   responses:
     BadRequest:
       description: La solicitud es inválida o malformada.
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: "#/components/schemas/Error"
     NotFound:
       description: El recurso solicitado no pudo ser encontrado.
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: "#/components/schemas/Error"
     InternalError:
       description: Error interno del servidor.
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: "#/components/schemas/Error"
