@@ -11,7 +11,7 @@ RUN go mod download
 COPY . .
 
 # Build the Go app
-RUN go build -o server ./cmd
+RUN go build -o ecostars-fake-api ./cmd
 
 # Final stage
 FROM alpine:3.21
@@ -22,10 +22,10 @@ RUN apk --no-cache upgrade && apk --no-cache add ca-certificates
 WORKDIR /app
 
 # Copy the binary from builder
-COPY --from=builder /app/server .
+COPY --from=builder /app/ecostars-fake-api .
 
 # Expose the port
 EXPOSE 8081 8082
 
 # Command to run
-ENTRYPOINT ["./server"]
+ENTRYPOINT ["./ecostars-fake-api"]

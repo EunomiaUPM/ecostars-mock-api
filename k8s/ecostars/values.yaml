@@ -1,0 +1,121 @@
+# Default values for ecostars.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+global:
+  env:
+    # App DB
+    databaseHost: postgres
+    databasePort: "5432"
+    databaseUser: postgres
+    databaseName: postgres
+    # Keycloak DB
+    keycloakDbHost: ecostars-keycloak-db
+    keycloakDbPort: "5432"
+    keycloakDbName: keycloak
+    keycloakDbUser: keycloak
+    # Static API
+    staticServerHost: "0.0.0.0"
+    staticServerPort: "8081"
+    # Dynamic API
+    dynamicServerHost: "0.0.0.0"
+    dynamicServerPort: "8082"
+    # Keycloak
+    keycloakUrl: "http://ecostars-keycloak:8080"
+    keycloakExternalHost: "auth.127.0.0.1.nip.io"
+    keycloakRealm: ecostars
+    keycloakClientId: ecostars-client
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations: {}
+  hosts:
+    - host: auth.127.0.0.1.nip.io
+      paths:
+        - path: /
+          pathType: Prefix
+          serviceName: keycloak
+          port: 8080
+    - host: static.127.0.0.1.nip.io
+      paths:
+        - path: /
+          pathType: Prefix
+          serviceName: static-api
+          port: 8081
+    - host: dynamic.127.0.0.1.nip.io
+      paths:
+        - path: /
+          pathType: Prefix
+          serviceName: dynamic-api
+          port: 8082
+
+postgres:
+  image:
+    repository: postgres
+    tag: "15"
+    pullPolicy: IfNotPresent
+  auth:
+    username: postgres
+    password: postgres
+    database: postgres
+  service:
+    port: 5432
+
+keycloakDb:
+  image:
+    repository: postgres
+    tag: "15"
+    pullPolicy: IfNotPresent
+  auth:
+    username: keycloak
+    password: password
+    database: keycloak
+  service:
+    port: 5432
+
+keycloak:
+  image:
+    repository: quay.io/keycloak/keycloak
+    tag: latest
+    pullPolicy: IfNotPresent
+  auth:
+    adminUser: admin
+    adminPassword: admin
+  service:
+    type: ClusterIP
+    port: 8080
+
+staticApi:
+  name: static-api
+  image:
+    repository: ecostars/static-api
+    tag: latest
+    pullPolicy: Never # Local development mostly
+  service:
+    type: ClusterIP
+    port: 8081
+
+dynamicApi:
+  name: dynamic-api
+  image:
+    repository: ecostars/dynamic-api
+    tag: latest
+    pullPolicy: Never # Local development mostly
+  service:
+    type: ClusterIP
+    port: 8082
+
+setupJob:
+  image:
+    repository: ecostars/static-api
+    tag: latest
+    pullPolicy: Never
+
+# hostAliases allows mapping custom hostnames to IPs inside the pods
+# Useful for reaching the host machine from within the cluster
+hostAliases: []
+#  - ip: "172.17.0.1" # Standard Docker bridge gateway
+#    hostnames:
+#      - "127.0.0.1.nip.io"
+#      - "webhook.local"

@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "ecostars.fullname" . }}-keycloak-db
+  labels:
+    {{- include "ecostars.labels" . | nindent 4 }}
+    app.kubernetes.io/component: keycloak-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "ecostars.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: keycloak-db
+  template:
+    metadata:
+      labels:
+        {{- include "ecostars.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: keycloak-db
+    spec:
+      containers:
+        - name: postgres
+          image: "{{ .Values.keycloakDb.image.repository }}:{{ .Values.keycloakDb.image.tag }}"
+          imagePullPolicy: {{ .Values.keycloakDb.image.pullPolicy }}
+          ports:
+            - name: tcp
+              containerPort: 5432
+              protocol: TCP
+          env:
+            - name: POSTGRES_USER
+              value: {{ .Values.keycloakDb.auth.username }}
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "ecostars.fullname" . }}-secrets
+                  key: KEYCLOAK_DB_PASSWORD
+            - name: POSTGRES_DB
+              value: {{ .Values.keycloakDb.auth.database }}
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: data
+          emptyDir: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "ecostars.fullname" . }}-keycloak-db
+  labels:
+    {{- include "ecostars.labels" . | nindent 4 }}
+    app.kubernetes.io/component: keycloak-db
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.keycloakDb.service.port }}
+      targetPort: tcp
+      protocol: TCP
+      name: tcp
+  selector:
+    {{- include "ecostars.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: keycloak-db

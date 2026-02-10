@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "ecostars.fullname" . }}-dynamic-api
+  labels:
+    {{- include "ecostars.labels" . | nindent 4 }}
+    app.kubernetes.io/component: dynamic-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "ecostars.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: dynamic-api
+  template:
+    metadata:
+      labels:
+        {{- include "ecostars.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: dynamic-api
+    spec:
+      {{- with .Values.hostAliases }}
+      hostAliases:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: dynamic-api
+          image: "{{ .Values.dynamicApi.image.repository }}:{{ .Values.dynamicApi.image.tag }}"
+          imagePullPolicy: {{ .Values.dynamicApi.image.pullPolicy }}
+          command: ["/app/ecostars-fake-api", "metrics"]
+          envFrom:
+            - configMapRef:
+                name: {{ include "ecostars.fullname" . }}-config
+            - secretRef:
+                name: {{ include "ecostars.fullname" . }}-secrets
+          ports:
+            - name: http
+              containerPort: 8082
+              protocol: TCP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "ecostars.fullname" . }}-dynamic-api
+  labels:
+    {{- include "ecostars.labels" . | nindent 4 }}
+    app.kubernetes.io/component: dynamic-api
+spec:
+  type: {{ .Values.dynamicApi.service.type }}
+  ports:
+    - port: {{ .Values.dynamicApi.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "ecostars.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: dynamic-api

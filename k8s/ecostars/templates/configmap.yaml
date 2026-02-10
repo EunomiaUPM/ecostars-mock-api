@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "ecostars.fullname" . }}-config
+  labels:
+    {{- include "ecostars.labels" . | nindent 4 }}
+data:
+  # App DB
+  DATABASE_HOST: {{ include "ecostars.fullname" . }}-postgres
+  DATABASE_PORT: {{ .Values.global.env.databasePort | quote }}
+  DATABASE_USER: {{ .Values.postgres.auth.username }}
+  DATABASE_NAME: {{ .Values.postgres.auth.database }}
+  
+  # Keycloak DB Env (if needed by app, though app doesn't use it directly)
+
+  # Static API
+  STATIC_SERVER_HOST: {{ .Values.global.env.staticServerHost }}
+  STATIC_SERVER_PORT: {{ .Values.global.env.staticServerPort | quote }}
+  
+  # Dynamic API
+  DYNAMIC_SERVER_HOST: {{ .Values.global.env.dynamicServerHost }}
+  DYNAMIC_SERVER_PORT: {{ .Values.global.env.dynamicServerPort | quote }}
+  
+  # Keycloak
+  KEYCLOAK_URL: {{ .Values.global.env.keycloakUrl }}
+  KEYCLOAK_REALM: {{ .Values.global.env.keycloakRealm }}
+  KEYCLOAK_CLIENT_ID: {{ .Values.global.env.keycloakClientId }}

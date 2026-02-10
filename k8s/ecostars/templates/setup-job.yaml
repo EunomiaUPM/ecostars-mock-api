@@ -1,0 +1,28 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "ecostars.fullname" . }}-setup
+  labels:
+    {{- include "ecostars.labels" . | nindent 4 }}
+    app.kubernetes.io/component: setup
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  template:
+    metadata:
+      labels:
+        {{- include "ecostars.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: setup
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: setup
+          image: "{{ .Values.setupJob.image.repository }}:{{ .Values.setupJob.image.tag }}"
+          imagePullPolicy: {{ .Values.setupJob.image.pullPolicy }}
+          command: ["/app/ecostars-fake-api", "fake"]
+          envFrom:
+            - configMapRef:
+                name: {{ include "ecostars.fullname" . }}-config
+            - secretRef:
+                name: {{ include "ecostars.fullname" . }}-secrets

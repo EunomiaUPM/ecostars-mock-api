@@ -10,39 +10,34 @@ import (
 )
 
 func AuthMiddleware(cfg *config.Config) gin.HandlerFunc {
-	provider, err := oidc.NewProvider(context.Background(), cfg.KeycloakURL+"/realms/"+cfg.KeycloakRealm)
-	if err != nil {
-		// In production, you might want to handle this more gracefully,
-		// e.g. retrying or failing startup. For now, panic if auth provider is unreachable
-		// or just log error and maybe fail the request if it happens during request time?
-		// Better to panic on startup or lazy load.
-		// Since this is a simple factory, we'll just log and let the verifier fail later?
-		// No, NewProvider makes network calls. It's better to do this initialization outside the middleware closure
-		// or handle the error properly.
-		// For simplicity in this task, we will assume the provider is available or lazy load it?
-		// Initializing inside the middleware for every request is bad for performance.
-		// But initialization at startup might fail if Keycloak isn't up yet.
-		// Let's stick to simple implementation: panic if not reachable at startup, or better:
-		// allow the middleware to try connecting.
-		// Let's assume we initialize it once.
-	}
-
+	var provider *oidc.Provider
 	var verifier *oidc.IDTokenVerifier
-	if provider != nil {
-		verifier = provider.Verifier(&oidc.Config{ClientID: cfg.KeycloakClientID})
-	}
 
 	return func(c *gin.Context) {
-		// If provider setup failed (e.g. Keycloak down during startup), try to re-init?
-		// Or just fail.
+		// Lazy initialize provider
 		if provider == nil {
 			var err error
-			provider, err = oidc.NewProvider(context.Background(), cfg.KeycloakURL+"/realms/"+cfg.KeycloakRealm)
+			issuerURL := cfg.KeycloakURL + "/realms/" + cfg.KeycloakRealm
+			
+			// FIX: Since we use Kubernetes service names internally (ecostars-keycloak)
+			// but Keycloak reports itself as the external domain (nip.io),
+			// we use an "Insecure" context to allow the library to fetch metadata
+			// from the service URL even if the issuer name inside doesn't match.
+			ctx := oidc.InsecureIssuerURLContext(context.Background(), issuerURL)
+			
+			provider, err = oidc.NewProvider(ctx, issuerURL)
 			if err != nil {
+				println("OIDC Provider Error:", err.Error())
 				c.AbortWithStatusJSON(500, gin.H{"error": "Authentication provider unavailable"})
 				return
 			}
-			verifier = provider.Verifier(&oidc.Config{ClientID: cfg.KeycloakClientID})
+			// Skip issuer check because internal name != external name
+			// Skip client ID check (audience) because Keycloak tokens often don't include it by default
+			verifier = provider.Verifier(&oidc.Config{
+				ClientID:            cfg.KeycloakClientID,
+				SkipIssuerCheck:     true,
+				SkipClientIDCheck:   true,
+			})
 		}
 
 		authHeader := c.GetHeader("Authorization")

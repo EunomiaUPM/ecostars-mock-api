@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "ecostars.fullname" . }}-static-api
+  labels:
+    {{- include "ecostars.labels" . | nindent 4 }}
+    app.kubernetes.io/component: static-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "ecostars.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: static-api
+  template:
+    metadata:
+      labels:
+        {{- include "ecostars.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: static-api
+    spec:
+      {{- with .Values.hostAliases }}
+      hostAliases:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: static-api
+          image: "{{ .Values.staticApi.image.repository }}:{{ .Values.staticApi.image.tag }}"
+          imagePullPolicy: {{ .Values.staticApi.image.pullPolicy }}
+          command: ["/app/ecostars-fake-api", "serve"]
+          envFrom:
+            - configMapRef:
+                name: {{ include "ecostars.fullname" . }}-config
+            - secretRef:
+                name: {{ include "ecostars.fullname" . }}-secrets
+          ports:
+            - name: http
+              containerPort: 8081
+              protocol: TCP
+          # Ensure Keycloak is reachable before starting? Handled by k8s restarts usually.
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "ecostars.fullname" . }}-static-api
+  labels:
+    {{- include "ecostars.labels" . | nindent 4 }}
+    app.kubernetes.io/component: static-api
+spec:
+  type: {{ .Values.staticApi.service.type }}
+  ports:
+    - port: {{ .Values.staticApi.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "ecostars.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: static-api

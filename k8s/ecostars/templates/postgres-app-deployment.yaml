@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "ecostars.fullname" . }}-postgres
+  labels:
+    {{- include "ecostars.labels" . | nindent 4 }}
+    app.kubernetes.io/component: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "ecostars.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: postgres
+  template:
+    metadata:
+      labels:
+        {{- include "ecostars.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: "{{ .Values.postgres.image.repository }}:{{ .Values.postgres.image.tag }}"
+          imagePullPolicy: {{ .Values.postgres.image.pullPolicy }}
+          ports:
+            - name: tcp
+              containerPort: 5432
+              protocol: TCP
+          env:
+            - name: POSTGRES_USER
+              value: {{ .Values.postgres.auth.username }}
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "ecostars.fullname" . }}-secrets
+                  key: DATABASE_PASS
+            - name: POSTGRES_DB
+              value: {{ .Values.postgres.auth.database }}
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: data
+          emptyDir: {} # For simplicity in this example. Use PVC in production.
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "ecostars.fullname" . }}-postgres
+  labels:
+    {{- include "ecostars.labels" . | nindent 4 }}
+    app.kubernetes.io/component: postgres
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.postgres.service.port }}
+      targetPort: tcp
+      protocol: TCP
+      name: tcp
+  selector:
+    {{- include "ecostars.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: postgres
