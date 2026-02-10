@@ -6,6 +6,7 @@ import (
 	"ecostars-fake-api/internal/controllers/http"
 	"ecostars-fake-api/internal/database"
 	"ecostars-fake-api/internal/domain"
+	"ecostars-fake-api/internal/middleware"
 	"ecostars-fake-api/internal/repo"
 	"ecostars-fake-api/internal/services"
 	"sync"
@@ -22,7 +23,8 @@ func BootstrapMetricsCollector(config *config.Config) {
 
 	// Initialize Metric Simulator Service
 	var wg sync.WaitGroup
-	ctx, _ := context.WithCancel(context.Background())
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 	notificationService := services.NewNotificationService(
 		&repo.SubscriptionRepository{DB: db},
 		10,
@@ -48,6 +50,7 @@ func BootstrapMetricsCollector(config *config.Config) {
 
 	// Initialize Notification Service
 	router := gin.Default()
+	router.Use(middleware.AuthMiddleware(config))
 	subscriptionsRouter := http.SubscriptionsRouter{
 		SubscriptionService: services.NewSubscriptionService(
 			&repo.SubscriptionRepository{DB: db},

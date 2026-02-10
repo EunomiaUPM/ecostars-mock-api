@@ -3,6 +3,7 @@ package main
 import (
 	"ecostars-fake-api/internal/config"
 	"ecostars-fake-api/internal/controllers/http"
+	"ecostars-fake-api/internal/middleware"
 	"ecostars-fake-api/internal/repo"
 	"ecostars-fake-api/internal/services"
 
@@ -19,6 +20,10 @@ func BootstrapHTTPServer(config *config.Config) {
 	_ = db
 
 	router := gin.Default()
+
+	// Apply Auth Middleware
+	router.Use(middleware.AuthMiddleware(config))
+
 	hotelRouter := http.HotelRouter{
 		HotelService: services.HotelService{
 			HotelRepository:        &repo.HotelRepository{DB: db},

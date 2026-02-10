@@ -17,6 +17,9 @@ type Config struct {
 	StaticServerHost        string
 	DynamicStaticServerPort string
 	DynamicStaticServerHost string
+	KeycloakURL             string
+	KeycloakRealm           string
+	KeycloakClientID        string
 }
 
 func LoadConfig() *Config {
@@ -35,6 +38,9 @@ func LoadConfig() *Config {
 		StaticServerHost:        os.Getenv("STATIC_SERVER_HOST"),
 		DynamicStaticServerPort: os.Getenv("DYNAMIC_SERVER_PORT"),
 		DynamicStaticServerHost: os.Getenv("DYNAMIC_SERVER_HOST"),
+		KeycloakURL:             os.Getenv("KEYCLOAK_URL"),
+		KeycloakRealm:           os.Getenv("KEYCLOAK_REALM"),
+		KeycloakClientID:        os.Getenv("KEYCLOAK_CLIENT_ID"),
 	}
 
 	return config

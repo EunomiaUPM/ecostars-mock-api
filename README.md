@@ -116,6 +116,40 @@ DYNAMIC_SERVER_HOST=dynamic-api
 docker compose up -d
 ```
 
+## Authentication & Authorization
+
+The project uses [Keycloak](https://www.keycloak.org/) for identity management. Both `static-api` and `dynamic-api` are protected and require a valid Bearer Token.
+
+### Keycloak Access
+- **URL**: [http://localhost:8080](http://localhost:8080)
+- **Admin Console**: [http://localhost:8080/admin](http://localhost:8080/admin)
+- **Admin Credentials**: `admin` / `admin`
+
+### Default Realm Configuration
+The stack imports a default realm (`ecostars`) on startup with:
+- **Client ID**: `ecostars-client`
+- **Client Secret**: `ecostars-secret`
+- **Test User**: `testuser` / `password`
+
+### How to Authenticate
+To make requests to the API, you first need to obtain an access token:
+
+```bash
+export TOKEN=$(curl -s -X POST "http://localhost:8080/realms/ecostars/protocol/openid-connect/token" \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "client_id=ecostars-client" \
+  -d "client_secret=ecostars-secret" \
+  -d "username=testuser" \
+  -d "password=password" \
+  -d "grant_type=password" | jq -r '.access_token')
+```
+
+Then, include the token in your requests:
+
+```bash
+curl -H "Authorization: Bearer $TOKEN" http://localhost:8081/hotels
+```
+
 ## Contribute
 
 Please open up issue to contribute
