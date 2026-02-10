@@ -18,13 +18,13 @@ func AuthMiddleware(cfg *config.Config) gin.HandlerFunc {
 		if provider == nil {
 			var err error
 			issuerURL := cfg.KeycloakURL + "/realms/" + cfg.KeycloakRealm
-			
+
 			// FIX: Since we use Kubernetes service names internally (ecostars-keycloak)
 			// but Keycloak reports itself as the external domain (nip.io),
 			// we use an "Insecure" context to allow the library to fetch metadata
 			// from the service URL even if the issuer name inside doesn't match.
 			ctx := oidc.InsecureIssuerURLContext(context.Background(), issuerURL)
-			
+
 			provider, err = oidc.NewProvider(ctx, issuerURL)
 			if err != nil {
 				println("OIDC Provider Error:", err.Error())
@@ -34,9 +34,9 @@ func AuthMiddleware(cfg *config.Config) gin.HandlerFunc {
 			// Skip issuer check because internal name != external name
 			// Skip client ID check (audience) because Keycloak tokens often don't include it by default
 			verifier = provider.Verifier(&oidc.Config{
-				ClientID:            cfg.KeycloakClientID,
-				SkipIssuerCheck:     true,
-				SkipClientIDCheck:   true,
+				ClientID:          cfg.KeycloakClientID,
+				SkipIssuerCheck:   true,
+				SkipClientIDCheck: true,
 			})
 		}
 
